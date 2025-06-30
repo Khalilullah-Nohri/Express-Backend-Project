@@ -11,6 +11,8 @@ cd student-portal-backend
 
 # Install dependencies
 npm install
+npm init -y
+npm install express
 
 # Run the server
 node index.js
