@@ -9,7 +9,7 @@ This is a Node.js and Express-based REST API for managing student records. It su
 git clone https://github.com/your-username/student-portal-backend.git
 cd student-portal-backend
 
-# Install dependencies
+# Install dependsadfdsfencies
 npm install
 npm init -y
 npm install express
