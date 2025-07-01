@@ -1,0 +1,16 @@
+{
+  "name": "student-portal-backend",
+  "version": "1.0.0",
+  "description": "Backend API built with Express.js for handling student portal features.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": ["express", "backend", "student-portal"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
+
