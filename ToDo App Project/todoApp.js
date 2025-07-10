@@ -33,8 +33,16 @@ app.get("/", (req, res) => {
             )
             .join("")}
         </ul>
-        <p>Use Postman for POST, PUT, PATCH at <code>/todos</code></p>
-        <p>Use Browser for GET , Search <code>/todos/search?q=any_word_to_search</code> and for Sorting <code>/todos/sort?order=desc or asc</code></p>
+        <p>You can use <strong>Postman</strong> to test the <code>POST</code>, <code>PUT</code>, and <code>PATCH</code> requests at <code>/todos</code>.</p>
+
+<p>To view, search, or sort todos, simply use your <strong>browser</strong>:</p>
+<ul>
+  <li><strong>View all:</strong> <code>/todos</code></li>
+  <li><strong>Search:</strong> <code>/todos/search?q=your_keyword</code></li>
+  <li><strong>Sort by ID:</strong> <code>/todos/sort?k=asc</code> or <code>k=desc</code></li>
+  <li><strong>Sort by Description:</strong> <code>/todos/sort/description?k=asc</code> or <code>k=desc</code></li>
+</ul>
+
       </body>
     </html>
   `;
@@ -89,12 +97,31 @@ app.patch("/todos/:id", (req, res) => {
 //  SORTING API
 // /todos/sort?order=asc or desc
 app.get("/todos/sort", (req, res) => {
-  const order = req.query.order === "desc" ? "desc" : "asc"; // default to 'asc'
+  const validOrders = ["asc", "desc"];
+  const order = req.query.k;
 
+  if (!validOrders.includes(order)) {
+    return res.status(400).json({
+      error: "Invalid or missing query param 'k'. Use ?k=asc or ?k=desc",
+    });
+  }
+
+  const sortedTodos = [...todos].sort((a, b) =>
+    order === "asc" ? a.id - b.id : b.id - a.id
+  );
+  res.json(sortedTodos);
+});
+
+// Sort by description (A-Z or Z-A)
+app.get("/todos/sort/description", (req, res) => {
+  const order = req.query.k === "desc" ? "desc" : "asc";
   const sortedTodos = [...todos].sort((a, b) => {
-    return order === "asc" ? a.id - b.id : b.id - a.id;
+    const textA = a.description.toLowerCase();
+    const textB = b.description.toLowerCase();
+    if (textA < textB) return order === "asc" ? -1 : 1;
+    if (textA > textB) return order === "asc" ? 1 : -1;
+    return 0;
   });
-
   res.json(sortedTodos);
 });
 
@@ -102,7 +129,7 @@ app.get("/todos/sort", (req, res) => {
 // /todos/search?q=keyword
 app.get("/todos/search", (req, res) => {
   // const keyword = req.query.q?.toLowerCase();
-  const keyword = req.query.q ? req.query.q.toLowerCase() : '';
+  const keyword = req.query.q ? req.query.q.toLowerCase() : "";
 
   if (!keyword) {
     return res
