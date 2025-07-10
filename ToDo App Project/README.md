@@ -27,8 +27,9 @@ A simple and beginner-friendly Todo application built with Node.js and Express. 
 
 ```
 project-folder/
-│
+├── node_modules    # Contains `npm install express` commands modules
 ├── index.js        # Main server file
+├── package.json        # Contains `npm init -y` files , complete structure of project
 └── README.md       # You're reading it 🙂
 ```
 
@@ -46,7 +47,7 @@ npm install express
 
 3. **Run the server**
 ```bash
-node index.js
+node todoApp.js
 ```
 
 4. **Open in browser**
@@ -101,12 +102,18 @@ Content-Type: application/json
 
 ---
 
-### 🔹 GET sorted todos
+### 🔹 GET sorted todos By ID
 ```http
-GET /todos/sort?order=asc     // ascending
-GET /todos/sort?order=desc    // descending
+GET /todos/sort?k=asc     // ascending
+GET /todos/sort?k=desc    // descending
 ```
+---
 
+### 🔹 GET sorted todos By description
+```http
+GET /todos/sort/description?k=asc     // ascending
+GET /todos/sort/description?k=desc    // descending
+```
 ---
 
 ### 🔹 GET search todos
