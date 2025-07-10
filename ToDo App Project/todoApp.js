@@ -1,19 +1,17 @@
-const express = require('express');
+const express = require("express");
 const app = express();
 const PORT = 3000;
 
 app.use(express.json());
 
-
 let todos = [
-  { id: 1, description: 'Learn Express.js' },
-  { id: 2, description: 'Build a ToDo App' },
-  { id: 3, description: 'Test with Postman' }
+  { id: 1, description: "Learn Express.js" },
+  { id: 2, description: "Build a ToDo App" },
+  { id: 3, description: "Test with Postman" },
 ];
 let currentId = 4;
 
-
-app.get('/', (req, res) => {
+app.get("/", (req, res) => {
   const html = `
     <html>
       <head>
@@ -28,9 +26,15 @@ app.get('/', (req, res) => {
       <body>
         <h1>Todo List</h1>
         <ul>
-          ${todos.map(todo => `<li><strong>#${todo.id}</strong> - ${todo.description}</li>`).join('')}
+          ${todos
+            .map(
+              (todo) =>
+                `<li><strong>#${todo.id}</strong> - ${todo.description}</li>`
+            )
+            .join("")}
         </ul>
         <p>Use Postman for POST, PUT, PATCH at <code>/todos</code></p>
+        <p>Use Browser for GET , Search <code>/todos/search?q=any_word_to_search</code> and for Sorting <code>/todos/sort?order=desc or asc</code></p>
       </body>
     </html>
   `;
@@ -38,14 +42,15 @@ app.get('/', (req, res) => {
 });
 
 //  Get all todos
-app.get('/todos', (req, res) => {
+app.get("/todos", (req, res) => {
   res.json(todos);
 });
 
 //  Create new todo
-app.post('/todos', (req, res) => {
+app.post("/todos", (req, res) => {
   const { description } = req.body;
-  if (!description) return res.status(400).json({ error: 'Description is required' });
+  if (!description)
+    return res.status(400).json({ error: "Description is required" });
 
   const newTodo = { id: currentId++, description };
   todos.push(newTodo);
@@ -53,25 +58,26 @@ app.post('/todos', (req, res) => {
 });
 
 //  Update entire todo
-app.put('/todos/:id', (req, res) => {
+app.put("/todos/:id", (req, res) => {
   const todoId = parseInt(req.params.id);
   const { description } = req.body;
 
-  const todo = todos.find(t => t.id === todoId);
-  if (!todo) return res.status(404).json({ error: 'Todo not found' });
-  if (!description) return res.status(400).json({ error: 'Description is required' });
+  const todo = todos.find((t) => t.id === todoId);
+  if (!todo) return res.status(404).json({ error: "Todo not found" });
+  if (!description)
+    return res.status(400).json({ error: "Description is required" });
 
   todo.description = description;
   res.json(todo);
 });
 
 //  Partial update
-app.patch('/todos/:id', (req, res) => {
+app.patch("/todos/:id", (req, res) => {
   const todoId = parseInt(req.params.id);
   const { description } = req.body;
 
-  const todo = todos.find(t => t.id === todoId);
-  if (!todo) return res.status(404).json({ error: 'Todo not found' });
+  const todo = todos.find((t) => t.id === todoId);
+  if (!todo) return res.status(404).json({ error: "Todo not found" });
 
   if (description !== undefined) {
     todo.description = description;
@@ -80,14 +86,13 @@ app.patch('/todos/:id', (req, res) => {
   res.json(todo);
 });
 
-
 //  SORTING API
 // /todos/sort?order=asc or desc
-app.get('/todos/sort', (req, res) => {
-  const order = req.query.order === 'desc' ? 'desc' : 'asc'; // default to 'asc'
+app.get("/todos/sort", (req, res) => {
+  const order = req.query.order === "desc" ? "desc" : "asc"; // default to 'asc'
 
   const sortedTodos = [...todos].sort((a, b) => {
-    return order === 'asc' ? a.id - b.id : b.id - a.id;
+    return order === "asc" ? a.id - b.id : b.id - a.id;
   });
 
   res.json(sortedTodos);
@@ -95,20 +100,25 @@ app.get('/todos/sort', (req, res) => {
 
 //  SEARCH API
 // /todos/search?q=keyword
-app.get('/todos/search', (req, res) => {
-  const keyword = req.query.q?.toLowerCase();
+app.get("/todos/search", (req, res) => {
+  // const keyword = req.query.q?.toLowerCase();
+  const keyword = req.query.q ? req.query.q.toLowerCase() : '';
 
   if (!keyword) {
-    return res.status(400).json({ error: 'Search query is required using ?q=keyword' });
+    return res
+      .status(400)
+      .json({ error: "Search query is required using ?q=keyword" });
   }
 
-  const filtered = todos.filter(todo =>
+  const filtered = todos.filter((todo) =>
     todo.description.toLowerCase().includes(keyword)
   );
-
-  res.json(filtered);
+  if (filtered.length === 0) {
+    res.status(404).json({ message: "No todos found for your search query." });
+  } else {
+    res.json(filtered);
+  }
 });
-
 
 //  Start the server
 app.listen(PORT, () => {
